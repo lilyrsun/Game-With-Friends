@@ -160,7 +160,6 @@ a {
   text-transform: uppercase;
 }
 
-h1,
 h2,
 h3,
 .tab,
@@ -180,12 +179,15 @@ p {
 h1 {
   margin-bottom: 18px;
   color: #ffffff;
-  font-size: clamp(2.5rem, 7vw, 5.8rem);
-  line-height: 1;
-  letter-spacing: 0.01em;
+  font-family: "Rubik Glitch", "Bungee Inline", Inter, system-ui, sans-serif;
+  font-size: clamp(4rem, 9vw, 8rem);  
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 0.95;
+  letter-spacing: 0.03em;
   text-shadow:
     3px 3px 0 #111111,
-    0 0 18px rgba(24, 243, 255, 0.38);
+    0 0 22px rgba(24, 243, 255, 0.45);
 }
 
 .hero-copy {

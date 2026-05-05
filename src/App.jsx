@@ -171,7 +171,7 @@ function App() {
           <h1>Game With Friends</h1>
           <p className="hero-copy">
             Find online multiplayer games by genre, price, player count, and
-            rating — so your group can spend less time deciding and more time
+            rating, so your group can spend less time deciding and more time
             playing.
           </p>
         </header>
