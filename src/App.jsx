@@ -1,64 +1,49 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
-const games = [
-  {
-    id: 1,
-    title: "Overcooked! 2",
-    genre: "Co-op",
-    players: "1-4 players",
-    price: "Paid",
-    duration: "15-30 min",
-    style: "Chaotic teamwork",
-    image:
-      "https://images.unsplash.com/photo-1556438064-2d7646166914?auto=format&fit=crop&w=900&q=80",
-    description:
-      "A fast-paced cooperative cooking game where players work together under pressure to prepare, cook, and serve dishes."
-  },
-  {
-    id: 2,
-    title: "Among Us",
-    genre: "Social Deduction",
-    players: "4-15 players",
-    price: "Free/Paid",
-    duration: "10-20 min",
-    style: "Suspicion and strategy",
-    image:
-      "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=900&q=80",
-    description:
-      "A multiplayer social deduction game where crewmates complete tasks while impostors try to sabotage the mission."
-  },
-  {
-    id: 3,
-    title: "Rocket League",
-    genre: "Sports",
-    players: "1-8 players",
-    price: "Free",
-    duration: "5-10 min",
-    style: "Competitive action",
-    image:
-      "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=80",
-    description:
-      "A high-energy multiplayer game that combines soccer-style competition with rocket-powered cars."
-  },
-  {
-    id: 4,
-    title: "Stardew Valley",
-    genre: "Co-op",
-    players: "1-8 players",
-    price: "Paid",
-    duration: "Open-ended",
-    style: "Relaxed collaboration",
-    image:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
-    description:
-      "A cozy farming and life simulation game where friends can build farms, explore mines, fish, and decorate together."
-  }
-];
-
 function App() {
+  const [games, setGames] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedGenre, setSelectedGenre] = useState("All");
   const [selectedGame, setSelectedGame] = useState(null);
+
+  useEffect(() => {
+    async function getGames() {
+      try {
+        const API_KEY = import.meta.env.VITE_RAWG_API_KEY;
+
+        const url = `https://api.rawg.io/api/games?key=${API_KEY}&tags=multiplayer&page_size=20&ordering=-rating`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        const cleanedGames = data.results.map((game) => ({
+          id: game.id,
+          title: game.name,
+          genre: game.genres?.[0]?.name || "Multiplayer",
+          players: "Multiplayer",
+          price: "Check store",
+          duration: "Varies",
+          style:
+            game.tags?.slice(0, 2).map((tag) => tag.name).join(", ") ||
+            "Online play",
+          image: game.background_image,
+          rating: game.rating,
+          description: `A ${
+            game.genres?.[0]?.name || "multiplayer"
+          } game with a RAWG rating of ${game.rating || "N/A"}.`
+        }));
+
+        setGames(cleanedGames);
+      } catch (error) {
+        console.error("Error fetching RAWG games:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    getGames();
+  }, []);
 
   const genres = ["All", ...new Set(games.map((game) => game.genre))];
 
@@ -91,7 +76,7 @@ function App() {
           <a href="#discover" className="primary-button">
             Start browsing
           </a>
-          <span className="api-note">Powered by RAWG API soon</span>
+          <span className="api-note">Powered by RAWG API</span>
         </div>
       </section>
 
@@ -101,8 +86,8 @@ function App() {
           <h2>Choose a game night mood</h2>
         </div>
         <p>
-          Filter by category and click a card for a quick preview. This will
-          later connect to live game data from RAWG.
+          Filter by category and click a card for a quick preview. Game data is
+          loaded from the RAWG video game database.
         </p>
       </section>
 
@@ -117,6 +102,12 @@ function App() {
           </button>
         ))}
       </section>
+
+      {isLoading && <p className="loading">Loading multiplayer games...</p>}
+
+      {!isLoading && filteredGames.length === 0 && (
+        <p className="loading">No games found. Check your API key or request URL.</p>
+      )}
 
       <section className="game-grid" aria-label="Game results">
         {filteredGames.map((game) => (
