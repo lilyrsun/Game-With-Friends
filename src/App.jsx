@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import pacmenLogo from "./assets/logo-pacmen.png";
 import ghostsLogo from "./assets/logo-ghosts.png";
@@ -124,7 +124,6 @@ function App() {
     [games]
   );
 
-  const carouselGames = topRatedGames.slice(0, 10);
   const visibleExploreGames = games.slice(0, visibleCount);
 
   const genreGames =
@@ -210,7 +209,6 @@ function App() {
 
         {!isLoading && activeTab === "home" && (
           <HomePage
-            carouselGames={carouselGames}
             topRatedGames={topRatedGames}
             popularGames={popularGames}
             visibleExploreGames={visibleExploreGames}
@@ -310,7 +308,6 @@ function App() {
 }
 
 function HomePage({
-  carouselGames,
   topRatedGames,
   popularGames,
   visibleExploreGames,
@@ -319,20 +316,65 @@ function HomePage({
   setVisibleCount,
   setSelectedGame
 }) {
+  const carouselRef = useRef(null);
+
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
+    let animationFrame;
+    let isPaused = false;
+
+    const autoScroll = () => {
+      if (!isPaused) {
+        carousel.scrollLeft += 0.6;
+
+        if (carousel.scrollLeft >= carousel.scrollWidth / 2) {
+          carousel.scrollLeft = 0;
+        }
+      }
+
+      animationFrame = requestAnimationFrame(autoScroll);
+    };
+
+    const pauseScroll = () => {
+      isPaused = true;
+    };
+
+    const resumeScroll = () => {
+      isPaused = false;
+    };
+
+    carousel.addEventListener("mouseenter", pauseScroll);
+    carousel.addEventListener("mouseleave", resumeScroll);
+    carousel.addEventListener("touchstart", pauseScroll);
+    carousel.addEventListener("touchend", resumeScroll);
+
+    animationFrame = requestAnimationFrame(autoScroll);
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      carousel.removeEventListener("mouseenter", pauseScroll);
+      carousel.removeEventListener("mouseleave", resumeScroll);
+      carousel.removeEventListener("touchstart", pauseScroll);
+      carousel.removeEventListener("touchend", resumeScroll);
+    };
+  }, []);
+
   return (
     <>
       <section className="home-section">
         <div className="section-title-row">
           <div>
-            <p className="eyebrow">Featured</p>
-            <h2>Featured Games</h2>
+            <p className="eyebrow">Popular</p>
+            <h2>Most Popular Games</h2>
           </div>
-          <p>Moving carousel</p>
+          <p>Based on RAWG activity</p>
         </div>
 
-        <div className="carousel-shell">
+        <div className="carousel-shell" ref={carouselRef}>
           <div className="carousel-track">
-            {[...carouselGames, ...carouselGames].map((game, index) => (
+            {[...popularGames, ...popularGames].map((game, index) => (
               <article
                 className="carousel-card"
                 key={`${game.id}-${index}`}
@@ -354,7 +396,7 @@ function HomePage({
         <div className="section-title-row">
           <div>
             <p className="eyebrow">Top Rated</p>
-            <h2>This Month&apos;s Top Rated</h2>
+            <h2>Top Rated Picks</h2>
           </div>
           <p>Powered by RAWG API</p>
         </div>
@@ -373,22 +415,6 @@ function HomePage({
                 <span>★ {game.rating || "N/A"}</span>
               </div>
             </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="home-section">
-        <div className="section-title-row">
-          <div>
-            <p className="eyebrow">Popular</p>
-            <h2>Most Popular Games</h2>
-          </div>
-          <p>Based on RAWG activity</p>
-        </div>
-
-        <div className="horizontal-scroll">
-          {popularGames.map((game) => (
-            <GameCard key={game.id} game={game} onClick={setSelectedGame} />
           ))}
         </div>
       </section>

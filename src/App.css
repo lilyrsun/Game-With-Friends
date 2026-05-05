@@ -239,19 +239,34 @@ h1 {
 .carousel-shell {
   width: 100%;
   max-width: 100%;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   border: 3px solid #ffffff;
   background: rgba(0, 0, 0, 0.35);
+  scroll-behavior: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #18f3ff rgba(255, 255, 255, 0.12);
+}
+
+.carousel-shell::-webkit-scrollbar {
+  height: 10px;
+}
+
+.carousel-shell::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.carousel-shell::-webkit-scrollbar-thumb {
+  background: #18f3ff;
+  border: 2px solid #050509;
 }
 
 .carousel-track {
   display: flex;
   width: max-content;
-  max-width: none;
   gap: 18px;
   padding: 18px;
-  animation: scroll-carousel 36s linear infinite;
-  will-change: transform;
+  animation: none;
 }
 
 .carousel-shell:hover .carousel-track {
@@ -293,16 +308,6 @@ h1 {
 .carousel-card span {
   color: #ffdc3d;
   font-weight: 900;
-}
-
-@keyframes scroll-carousel {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(-50%);
-  }
 }
 
 .spotlight-grid {
@@ -356,23 +361,6 @@ h1 {
 .featured-overlay span {
   color: #ffdc3d;
   font-weight: 900;
-}
-
-.horizontal-scroll {
-  width: 100%;
-  max-width: 100%;
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(240px, 280px);
-  gap: 22px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding-bottom: 18px;
-  scroll-snap-type: x mandatory;
-}
-
-.horizontal-scroll .game-card {
-  scroll-snap-align: start;
 }
 
 .game-grid {
@@ -614,13 +602,13 @@ h1 {
 }
 
 .site-footer {
-  width: min(1240px, 100%);
+  width: min(1320px, 100%);
   margin: 100px auto 0;
-  padding: 34px;
+  padding: 34px 46px;
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  grid-template-columns: minmax(0, 1.2fr) minmax(560px, 0.8fr);
   gap: 32px;
-  align-items: end;
+  align-items: center;
   border-top: 3px solid #ffffff;
   border-bottom: 3px solid #ffffff;
   background:
@@ -645,16 +633,18 @@ h1 {
 .footer-links {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .footer-links button {
+  white-space: nowrap;
   border: 2px solid rgba(255, 255, 255, 0.55);
   background: rgba(0, 0, 0, 0.18);
   color: #ffffff;
   padding: 9px 12px;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -668,15 +658,15 @@ h1 {
   box-shadow: 0 0 20px rgba(255, 115, 223, 0.32);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1200px) {
   .site-footer {
     grid-template-columns: 1fr;
     align-items: start;
-    padding: 26px;
   }
 
   .footer-links {
     justify-content: flex-start;
+    flex-wrap: wrap;
   }
 }
 
