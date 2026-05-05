@@ -73,27 +73,45 @@ a {
   gap: 24px;
 }
 
-.dot-row {
-  display: flex;
-  gap: 5px;
+.logo-toggle {
+  position: relative;
+  width: 160px;
+  height: 48px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
   flex-shrink: 0;
 }
 
-.dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  display: inline-block;
+.logo-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity 0.25s ease, transform 0.25s ease, filter 0.25s ease;
 }
 
-.dot.cyan {
-  background: #18f3ff;
-  box-shadow: 0 0 12px rgba(24, 243, 255, 0.8);
+.pacmen-logo {
+  opacity: 1;
+  transform: scale(1);
 }
 
-.dot.pink {
-  background: #ff73df;
-  box-shadow: 0 0 12px rgba(255, 115, 223, 0.8);
+.ghosts-logo {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.logo-toggle:hover .pacmen-logo {
+  opacity: 0;
+  transform: scale(0.98);
+}
+
+.logo-toggle:hover .ghosts-logo {
+  opacity: 1;
+  transform: scale(1);
+  filter: drop-shadow(0 0 12px rgba(24, 243, 255, 0.45));
 }
 
 .tab-nav {
@@ -406,6 +424,29 @@ h1 {
   line-height: 1.3;
 }
 
+.game-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+  padding: 14px 20px;
+  border: 3px solid #ffffff;
+  background: #ffffff;
+  color: #050509;
+  font-family: "Bungee Inline", Inter, system-ui, sans-serif;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.game-link-button:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 0 3px rgba(255, 115, 223, 0.3),
+    0 0 26px rgba(24, 243, 255, 0.35);
+}
+
 .metadata,
 .modal-details {
   display: flex;
@@ -568,6 +609,73 @@ h1 {
 
 .close:hover {
   color: #ff73df;
+}
+
+.site-footer {
+  width: min(1240px, 100%);
+  margin: 100px auto 0;
+  padding: 34px;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 32px;
+  align-items: end;
+  border-top: 3px solid #ffffff;
+  border-bottom: 3px solid #ffffff;
+  background:
+    radial-gradient(circle at top right, rgba(255, 115, 223, 0.16), transparent 18rem),
+    rgba(0, 0, 0, 0.3);
+}
+
+.site-footer h2 {
+  margin-bottom: 12px;
+  font-size: clamp(1.25rem, 3vw, 2rem);
+  color: #ffffff;
+  text-shadow: 2px 2px 0 #111111;
+}
+
+.site-footer p {
+  max-width: 620px;
+  margin-bottom: 0;
+  color: #d7d3e8;
+  line-height: 1.7;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.footer-links button {
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  background: rgba(0, 0, 0, 0.18);
+  color: #ffffff;
+  padding: 9px 12px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.footer-links button:hover {
+  background: #ffffff;
+  color: #050509;
+  box-shadow: 0 0 20px rgba(255, 115, 223, 0.32);
+}
+
+@media (max-width: 760px) {
+  .site-footer {
+    grid-template-columns: 1fr;
+    align-items: start;
+    padding: 26px;
+  }
+
+  .footer-links {
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 980px) {

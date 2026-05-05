@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import "./App.css";
+import pacmenLogo from "./assets/logo-pacmen.png";
+import ghostsLogo from "./assets/logo-ghosts.png";
 
 function App() {
   const [games, setGames] = useState([]);
@@ -11,6 +13,7 @@ function App() {
   const [selectedPlayers, setSelectedPlayers] = useState("All");
   const [selectedRating, setSelectedRating] = useState("All");
   const [visibleCount, setVisibleCount] = useState(12);
+  const [logoClicked, setLogoClicked] = useState(false);
 
   useEffect(() => {
     async function getGames() {
@@ -34,6 +37,8 @@ function App() {
 
           return {
             id: game.id,
+            slug: game.slug,
+            gameUrl: `https://rawg.io/games/${game.slug}`,
             title: game.name,
             genre: game.genres?.[0]?.name || "Multiplayer",
             players: playerGroup,
@@ -129,12 +134,24 @@ function App() {
     <main className="page-shell">
       <section className="arcade-screen">
         <nav className="top-bar">
-          <div className="dot-row" aria-label="decorative arcade dots">
-            <span className="dot cyan"></span>
-            <span className="dot cyan"></span>
-            <span className="dot pink"></span>
-            <span className="dot pink"></span>
-          </div>
+          <button
+            className="logo-toggle"
+            onClick={() => handleTabChange("home")}
+            aria-label="Go to home page"
+            type="button"
+          >
+            <img
+              src={pacmenLogo}
+              alt="Game With Friends home"
+              className="logo-image pacmen-logo"
+            />
+            <img
+              src={ghostsLogo}
+              alt=""
+              aria-hidden="true"
+              className="logo-image ghosts-logo"
+            />
+          </button>
 
           <div className="tab-nav" aria-label="Main navigation">
             {tabs.map((tab) => (
@@ -229,6 +246,47 @@ function App() {
             setSelectedGame={setSelectedGame}
           />
         )}
+
+        {!isLoading && activeTab === "ratings" && (
+          <CategoryPage
+            eyebrow="Explore By"
+            title="Ratings"
+            description="Browse games by rating group based on RAWG rating data."
+            options={ratingOptions}
+            selectedOption={selectedRating}
+            setSelectedOption={setSelectedRating}
+            games={ratingGames}
+            setSelectedGame={setSelectedGame}
+          />
+        )}
+
+        <footer className="site-footer">
+          <div>
+            <p className="eyebrow">Game With Friends</p>
+            <h2>Ready for the next round?</h2>
+            <p>
+              Lily Sun | CSE 2004A Final Project | Data from RAWG Video Games Database
+            </p>
+          </div>
+
+          <div className="footer-links">
+            <button type="button" onClick={() => handleTabChange("home")}>
+              Home
+            </button>
+            <button type="button" onClick={() => handleTabChange("genre")}>
+              Genre
+            </button>
+            <button type="button" onClick={() => handleTabChange("price")}>
+              Price
+            </button>
+            <button type="button" onClick={() => handleTabChange("players")}>
+              Players
+            </button>
+            <button type="button" onClick={() => handleTabChange("ratings")}>
+              Ratings
+            </button>
+          </div>
+        </footer>
       </section>
 
       {selectedGame && (
@@ -459,6 +517,15 @@ function GameModal({ game, onClose }) {
         </div>
 
         <p className="modal-description">{game.description}</p>
+
+        <a
+          className="game-link-button"
+          href={game.gameUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          View Game Page
+        </a>
       </section>
     </div>
   );
