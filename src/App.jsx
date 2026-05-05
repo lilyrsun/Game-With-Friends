@@ -18,12 +18,17 @@ function App() {
     async function getGames() {
       try {
         const API_KEY = import.meta.env.VITE_RAWG_API_KEY;
-        const url = `https://api.rawg.io/api/games?key=${API_KEY}&tags=multiplayer&page_size=40&ordering=-rating`;
 
-        const response = await fetch(url);
-        const data = await response.json();
+        const urls = [
+          `https://api.rawg.io/api/games?key=${API_KEY}&tags=multiplayer&page_size=40&page=1&ordering=-rating`,
+          `https://api.rawg.io/api/games?key=${API_KEY}&tags=multiplayer&page_size=40&page=2&ordering=-rating`,
+          `https://api.rawg.io/api/games?key=${API_KEY}&tags=multiplayer&page_size=40&page=3&ordering=-rating`
+        ];
 
-        const results = data.results || [];
+        const responses = await Promise.all(urls.map((url) => fetch(url)));
+        const pages = await Promise.all(responses.map((response) => response.json()));
+
+        const results = pages.flatMap((page) => page.results || []);
 
         const cleanedGames = results.map((game) => {
           const rating = game.rating || 0;
@@ -44,13 +49,15 @@ function App() {
               : releaseYear >= 2000
               ? "2000s"
               : "Before 2000";
+          const genres = game.genres?.map((genre) => genre.name) || ["Multiplayer"];
 
           return {
             id: game.id,
             slug: game.slug,
             gameUrl: `https://rawg.io/games/${game.slug}`,
             title: game.name,
-            genre: game.genres?.[0]?.name || "Multiplayer",
+            genres,
+            genre: genres[0] || "Multiplayer",
             platforms,
             primaryPlatform: platforms[0] || "Unknown",
             releaseDate,
@@ -97,12 +104,20 @@ function App() {
     { id: "ratings", label: "Ratings" }
   ];
 
-  const genres = ["All", ...new Set(games.map((game) => game.genre))];
-  const allPlatforms = [
-    ...new Set(games.flatMap((game) => game.platforms))
-  ].filter(Boolean);
+  const genres = [
+    "All",
+    ...new Set(games.flatMap((game) => game.genres || []))
+  ].sort((a, b) => {
+    if (a === "All") return -1;
+    if (b === "All") return 1;
+    return a.localeCompare(b);
+  });
 
-  const platformOptions = ["All", ...allPlatforms.slice(0, 12)];
+  const allPlatforms = [
+    ...new Set(games.flatMap((game) => game.platforms || []))
+  ].sort();
+
+  const platformOptions = ["All", ...allPlatforms];
 
   const releaseOptions = [
     "All",
@@ -129,12 +144,12 @@ function App() {
   const genreGames =
     selectedGenre === "All"
       ? games
-      : games.filter((game) => game.genre === selectedGenre);
+      : games.filter((game) => game.genres?.includes(selectedGenre));
 
   const platformGames =
     selectedPlatform === "All"
       ? games
-      : games.filter((game) => game.platforms.includes(selectedPlatform));
+      : games.filter((game) => game.platforms?.includes(selectedPlatform));
 
   const releaseGames =
     selectedRelease === "All"
@@ -470,7 +485,7 @@ function CategoryPage({
         <p className="filter-help">{description}</p>
 
         <div className="filters">
-          {options.slice(0, 10).map((option) => (
+          {options.map((option) => (
             <button
               key={option}
               className={selectedOption === option ? "filter active" : "filter"}
