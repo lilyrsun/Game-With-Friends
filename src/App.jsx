@@ -13,7 +13,6 @@ function App() {
   const [selectedRelease, setSelectedRelease] = useState("All");
   const [selectedRating, setSelectedRating] = useState("All");
   const [visibleCount, setVisibleCount] = useState(12);
-  const [logoClicked, setLogoClicked] = useState(false);
 
   useEffect(() => {
     async function getGames() {
@@ -24,25 +23,27 @@ function App() {
         const response = await fetch(url);
         const data = await response.json();
 
-        const cleanedGames = data.results.map((game, index) => {
+        const results = data.results || [];
+
+        const cleanedGames = results.map((game) => {
           const rating = game.rating || 0;
 
-        const platforms =
-          game.platforms?.map((item) => item.platform.name) || [];
+          const platforms =
+            game.platforms?.map((item) => item.platform.name) || [];
 
-        const releaseDate = game.released || "Unknown";
-        const releaseYear = game.released ? Number(game.released.slice(0, 4)) : null;
+          const releaseDate = game.released || "Unknown";
+          const releaseYear = game.released ? Number(game.released.slice(0, 4)) : null;
 
-        const releaseGroup =
-          !releaseYear
-            ? "Unknown"
-            : releaseYear >= 2020
-            ? "2020s"
-            : releaseYear >= 2010
-            ? "2010s"
-            : releaseYear >= 2000
-            ? "2000s"
-            : "Before 2000";
+          const releaseGroup =
+            !releaseYear
+              ? "Unknown"
+              : releaseYear >= 2020
+              ? "2020s"
+              : releaseYear >= 2010
+              ? "2010s"
+              : releaseYear >= 2000
+              ? "2000s"
+              : "Before 2000";
 
           return {
             id: game.id,
@@ -55,7 +56,6 @@ function App() {
             releaseDate,
             releaseYear,
             releaseGroup,
-            duration: "Varies",
             style:
               game.tags?.slice(0, 2).map((tag) => tag.name).join(", ") ||
               "Online Play",
@@ -72,7 +72,9 @@ function App() {
             popularity: game.added || 0,
             description: `A ${
               game.genres?.[0]?.name || "multiplayer"
-            } game with a RAWG rating of ${rating || "N/A"}.`
+            } game released ${
+              releaseDate === "Unknown" ? "on an unknown date" : `on ${releaseDate}`
+            } with a RAWG rating of ${rating || "N/A"}.`
           };
         });
 
@@ -194,7 +196,7 @@ function App() {
           <p className="eyebrow">Multiplayer Archive</p>
           <h1>Game With Friends</h1>
           <p className="hero-copy">
-            Find online multiplayer games by genre, price, player count, and
+            Find online multiplayer games by genre, platform, release date, and
             rating, so your group can spend less time deciding and more time
             playing.
           </p>
@@ -254,19 +256,6 @@ function App() {
             selectedOption={selectedRelease}
             setSelectedOption={setSelectedRelease}
             games={releaseGames}
-            setSelectedGame={setSelectedGame}
-          />
-        )}
-
-        {!isLoading && activeTab === "ratings" && (
-          <CategoryPage
-            eyebrow="Explore By"
-            title="Ratings"
-            description="Browse games by rating group based on RAWG rating data."
-            options={ratingOptions}
-            selectedOption={selectedRating}
-            setSelectedOption={setSelectedRating}
-            games={ratingGames}
             setSelectedGame={setSelectedGame}
           />
         )}
