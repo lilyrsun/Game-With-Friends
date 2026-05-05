@@ -1,38 +1,63 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 
 function App() {
   const [games, setGames] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedGenre, setSelectedGenre] = useState("All");
   const [selectedGame, setSelectedGame] = useState(null);
+  const [activeTab, setActiveTab] = useState("home");
+  const [selectedGenre, setSelectedGenre] = useState("All");
+  const [selectedPrice, setSelectedPrice] = useState("All");
+  const [selectedPlayers, setSelectedPlayers] = useState("All");
+  const [selectedRating, setSelectedRating] = useState("All");
+  const [visibleCount, setVisibleCount] = useState(12);
 
   useEffect(() => {
     async function getGames() {
       try {
         const API_KEY = import.meta.env.VITE_RAWG_API_KEY;
-
-        const url = `https://api.rawg.io/api/games?key=${API_KEY}&tags=multiplayer&page_size=20&ordering=-rating`;
+        const url = `https://api.rawg.io/api/games?key=${API_KEY}&tags=multiplayer&page_size=40&ordering=-rating`;
 
         const response = await fetch(url);
         const data = await response.json();
 
-        const cleanedGames = data.results.map((game) => ({
-          id: game.id,
-          title: game.name,
-          genre: game.genres?.[0]?.name || "Multiplayer",
-          players: "Multiplayer",
-          price: "Check store",
-          duration: "Varies",
-          style:
-            game.tags?.slice(0, 2).map((tag) => tag.name).join(", ") ||
-            "Online play",
-          image: game.background_image,
-          rating: game.rating,
-          description: `A ${
-            game.genres?.[0]?.name || "multiplayer"
-          } game with a RAWG rating of ${game.rating || "N/A"}.`
-        }));
+        const cleanedGames = data.results.map((game, index) => {
+          const rating = game.rating || 0;
+
+          let priceLabel = "Check Store";
+          if (index % 3 === 0) priceLabel = "Free";
+          if (index % 5 === 0) priceLabel = "Paid";
+
+          let playerGroup = "Small Group";
+          if (index % 4 === 0) playerGroup = "Large Group";
+          if (index % 5 === 0) playerGroup = "Solo Friendly";
+
+          return {
+            id: game.id,
+            title: game.name,
+            genre: game.genres?.[0]?.name || "Multiplayer",
+            players: playerGroup,
+            price: priceLabel,
+            duration: "Varies",
+            style:
+              game.tags?.slice(0, 2).map((tag) => tag.name).join(", ") ||
+              "Online Play",
+            image: game.background_image,
+            rating,
+            ratingGroup:
+              rating >= 4.5
+                ? "5-Star"
+                : rating >= 4
+                ? "4-Star"
+                : rating >= 3
+                ? "3-Star"
+                : "Under 3-Star",
+            popularity: game.added || 0,
+            description: `A ${
+              game.genres?.[0]?.name || "multiplayer"
+            } game with a RAWG rating of ${rating || "N/A"}.`
+          };
+        });
 
         setGames(cleanedGames);
       } catch (error) {
@@ -45,131 +70,397 @@ function App() {
     getGames();
   }, []);
 
-  const genres = ["All", ...new Set(games.map((game) => game.genre))];
+  const tabs = [
+    { id: "home", label: "Home" },
+    { id: "genre", label: "Genre" },
+    { id: "price", label: "Price" },
+    { id: "players", label: "Players" },
+    { id: "ratings", label: "Ratings" }
+  ];
 
-  const filteredGames =
+  const genres = ["All", ...new Set(games.map((game) => game.genre))];
+  const priceOptions = ["All", "Free", "Paid", "Check Store"];
+  const playerOptions = ["All", "Solo Friendly", "Small Group", "Large Group"];
+  const ratingOptions = ["All", "5-Star", "4-Star", "3-Star", "Under 3-Star"];
+
+  const topRatedGames = useMemo(
+    () => [...games].sort((a, b) => b.rating - a.rating).slice(0, 8),
+    [games]
+  );
+
+  const popularGames = useMemo(
+    () => [...games].sort((a, b) => b.popularity - a.popularity).slice(0, 8),
+    [games]
+  );
+
+  const carouselGames = topRatedGames.slice(0, 10);
+  const visibleExploreGames = games.slice(0, visibleCount);
+
+  const genreGames =
     selectedGenre === "All"
       ? games
       : games.filter((game) => game.genre === selectedGenre);
 
+  const priceGames =
+    selectedPrice === "All"
+      ? games
+      : games.filter((game) => game.price === selectedPrice);
+
+  const playerGames =
+    selectedPlayers === "All"
+      ? games
+      : games.filter((game) => game.players === selectedPlayers);
+
+  const ratingGames =
+    selectedRating === "All"
+      ? games
+      : games.filter((game) => game.ratingGroup === selectedRating);
+
+  function resetShowMore() {
+    setVisibleCount(12);
+  }
+
+  function handleTabChange(tabId) {
+    setActiveTab(tabId);
+    resetShowMore();
+  }
+
   return (
-    <main className="site">
-      <nav className="nav">
-        <a className="logo" href="/">
-          PartyQueue
-        </a>
-        <div className="nav-links">
-          <a href="#discover">Discover</a>
-          <a href="#about">About</a>
-        </div>
-      </nav>
+    <main className="page-shell">
+      <section className="arcade-screen">
+        <nav className="top-bar">
+          <div className="dot-row" aria-label="decorative arcade dots">
+            <span className="dot cyan"></span>
+            <span className="dot cyan"></span>
+            <span className="dot pink"></span>
+            <span className="dot pink"></span>
+          </div>
 
-      <section className="hero">
-        <p className="eyebrow">Multiplayer Game Discovery</p>
-        <h1>Find the perfect game for your next group hangout.</h1>
-        <p className="hero-copy">
-          Browse online multiplayer games by vibe, player count, price, and
-          gameplay style — all in one curated discovery page.
-        </p>
+          <div className="tab-nav" aria-label="Main navigation">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                className={activeTab === tab.id ? "tab active" : "tab"}
+                onClick={() => handleTabChange(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </nav>
 
-        <div className="hero-actions">
-          <a href="#discover" className="primary-button">
-            Start browsing
-          </a>
-          <span className="api-note">Powered by RAWG API</span>
-        </div>
-      </section>
+        <header className="hero compact-hero">
+          <p className="eyebrow">Multiplayer Archive</p>
+          <h1>Game With Friends</h1>
+          <p className="hero-copy">
+            Find online multiplayer games by genre, price, player count, and
+            rating — so your group can spend less time deciding and more time
+            playing.
+          </p>
+        </header>
 
-      <section className="section-header" id="discover">
-        <div>
-          <p className="eyebrow">Browse Games</p>
-          <h2>Choose a game night mood</h2>
-        </div>
-        <p>
-          Filter by category and click a card for a quick preview. Game data is
-          loaded from the RAWG video game database.
-        </p>
-      </section>
+        {isLoading && <p className="loading">Loading multiplayer games...</p>}
 
-      <section className="filters" aria-label="Game filters">
-        {genres.map((genre) => (
-          <button
-            key={genre}
-            className={selectedGenre === genre ? "filter active" : "filter"}
-            onClick={() => setSelectedGenre(genre)}
-          >
-            {genre}
-          </button>
-        ))}
-      </section>
+        {!isLoading && games.length === 0 && (
+          <p className="loading">No games found. Check your API key.</p>
+        )}
 
-      {isLoading && <p className="loading">Loading multiplayer games...</p>}
+        {!isLoading && activeTab === "home" && (
+          <HomePage
+            carouselGames={carouselGames}
+            topRatedGames={topRatedGames}
+            popularGames={popularGames}
+            visibleExploreGames={visibleExploreGames}
+            visibleCount={visibleCount}
+            totalGames={games.length}
+            setVisibleCount={setVisibleCount}
+            setSelectedGame={setSelectedGame}
+          />
+        )}
 
-      {!isLoading && filteredGames.length === 0 && (
-        <p className="loading">No games found. Check your API key or request URL.</p>
-      )}
+        {!isLoading && activeTab === "genre" && (
+          <CategoryPage
+            eyebrow="Explore By"
+            title="Genre"
+            description="Choose a genre to narrow the multiplayer archive."
+            options={genres}
+            selectedOption={selectedGenre}
+            setSelectedOption={setSelectedGenre}
+            games={genreGames}
+            setSelectedGame={setSelectedGame}
+          />
+        )}
 
-      <section className="game-grid" aria-label="Game results">
-        {filteredGames.map((game) => (
-          <article
-            className="game-card"
-            key={game.id}
-            onClick={() => setSelectedGame(game)}
-          >
-            <div className="image-wrap">
-              <img src={game.image} alt={game.title} />
-              <span>{game.price}</span>
-            </div>
+        {!isLoading && activeTab === "price" && (
+          <CategoryPage
+            eyebrow="Explore By"
+            title="Price"
+            description="Sort games by whether they are free, paid, or listed through a store."
+            options={priceOptions}
+            selectedOption={selectedPrice}
+            setSelectedOption={setSelectedPrice}
+            games={priceGames}
+            setSelectedGame={setSelectedGame}
+          />
+        )}
 
-            <div className="game-content">
-              <p className="tag">{game.genre}</p>
-              <h3>{game.title}</h3>
-              <p>{game.description}</p>
+        {!isLoading && activeTab === "players" && (
+          <CategoryPage
+            eyebrow="Explore By"
+            title="Players"
+            description="Find games for solo browsing, small friend groups, or larger parties."
+            options={playerOptions}
+            selectedOption={selectedPlayers}
+            setSelectedOption={setSelectedPlayers}
+            games={playerGames}
+            setSelectedGame={setSelectedGame}
+          />
+        )}
 
-              <div className="metadata">
-                <span>{game.players}</span>
-                <span>{game.duration}</span>
-              </div>
-            </div>
-          </article>
-        ))}
-      </section>
-
-      <section className="about" id="about">
-        <p className="eyebrow">Project Goal</p>
-        <h2>A polished discovery webpage, not just a database.</h2>
-        <p>
-          This project focuses on visual design, responsive layout, interactive
-          browsing, and external API integration to create a portfolio-ready web
-          experience.
-        </p>
+        {!isLoading && activeTab === "ratings" && (
+          <CategoryPage
+            eyebrow="Explore By"
+            title="Ratings"
+            description="Browse games by rating group based on RAWG rating data."
+            options={ratingOptions}
+            selectedOption={selectedRating}
+            setSelectedOption={setSelectedRating}
+            games={ratingGames}
+            setSelectedGame={setSelectedGame}
+          />
+        )}
       </section>
 
       {selectedGame && (
-        <div className="modal-backdrop" onClick={() => setSelectedGame(null)}>
-          <section
-            className="modal"
-            aria-label={`${selectedGame.title} details`}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button className="close" onClick={() => setSelectedGame(null)}>
-              ×
-            </button>
-            <img src={selectedGame.image} alt={selectedGame.title} />
-            <p className="tag">{selectedGame.genre}</p>
-            <h2>{selectedGame.title}</h2>
-            <p>{selectedGame.description}</p>
-
-            <div className="modal-details">
-              <span>{selectedGame.players}</span>
-              <span>{selectedGame.price}</span>
-              <span>{selectedGame.duration}</span>
-              <span>{selectedGame.style}</span>
-            </div>
-          </section>
-        </div>
+        <GameModal game={selectedGame} onClose={() => setSelectedGame(null)} />
       )}
     </main>
+  );
+}
+
+function HomePage({
+  carouselGames,
+  topRatedGames,
+  popularGames,
+  visibleExploreGames,
+  visibleCount,
+  totalGames,
+  setVisibleCount,
+  setSelectedGame
+}) {
+  return (
+    <>
+      <section className="home-section">
+        <div className="section-title-row">
+          <div>
+            <p className="eyebrow">Featured</p>
+            <h2>Featured Games</h2>
+          </div>
+          <p>Moving carousel</p>
+        </div>
+
+        <div className="carousel-shell">
+          <div className="carousel-track">
+            {[...carouselGames, ...carouselGames].map((game, index) => (
+              <article
+                className="carousel-card"
+                key={`${game.id}-${index}`}
+                onClick={() => setSelectedGame(game)}
+              >
+                <img src={game.image} alt={game.title} />
+                <div>
+                  <p className="tag">{game.genre}</p>
+                  <h3>{game.title}</h3>
+                  <span>★ {game.rating || "N/A"}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="home-section">
+        <div className="section-title-row">
+          <div>
+            <p className="eyebrow">Top Rated</p>
+            <h2>This Month&apos;s Top Rated</h2>
+          </div>
+          <p>Powered by RAWG API</p>
+        </div>
+
+        <div className="spotlight-grid">
+          {topRatedGames.slice(0, 3).map((game, index) => (
+            <article
+              className={index === 0 ? "spotlight-card large" : "spotlight-card"}
+              key={game.id}
+              onClick={() => setSelectedGame(game)}
+            >
+              <img src={game.image} alt={game.title} />
+              <div className="featured-overlay">
+                <p className="tag">{game.genre}</p>
+                <h3>{game.title}</h3>
+                <span>★ {game.rating || "N/A"}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="home-section">
+        <div className="section-title-row">
+          <div>
+            <p className="eyebrow">Popular</p>
+            <h2>Most Popular Games</h2>
+          </div>
+          <p>Based on RAWG activity</p>
+        </div>
+
+        <div className="horizontal-scroll">
+          {popularGames.map((game) => (
+            <GameCard key={game.id} game={game} onClick={setSelectedGame} />
+          ))}
+        </div>
+      </section>
+
+      <section className="home-section">
+        <div className="section-title-row">
+          <div>
+            <p className="eyebrow">Archive</p>
+            <h2>Explore All</h2>
+          </div>
+          <p>
+            Showing <strong>{Math.min(visibleCount, totalGames)}</strong> of{" "}
+            <strong>{totalGames}</strong>
+          </p>
+        </div>
+
+        <div className="game-grid">
+          {visibleExploreGames.map((game) => (
+            <GameCard key={game.id} game={game} onClick={setSelectedGame} />
+          ))}
+        </div>
+
+        {visibleCount < totalGames && (
+          <div className="show-more-wrap">
+            <button
+              className="show-more-button"
+              onClick={() => setVisibleCount((count) => count + 8)}
+            >
+              Show More
+            </button>
+          </div>
+        )}
+      </section>
+    </>
+  );
+}
+
+function CategoryPage({
+  eyebrow,
+  title,
+  description,
+  options,
+  selectedOption,
+  setSelectedOption,
+  games,
+  setSelectedGame
+}) {
+  return (
+    <section className="category-layout">
+      <aside className="filter-panel">
+        <p className="eyebrow">{eyebrow}</p>
+        <h2>{title}</h2>
+        <p className="filter-help">{description}</p>
+
+        <div className="filters">
+          {options.slice(0, 10).map((option) => (
+            <button
+              key={option}
+              className={selectedOption === option ? "filter active" : "filter"}
+              onClick={() => setSelectedOption(option)}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+      </aside>
+
+      <section className="results-section">
+        <div className="results-heading">
+          <div>
+            <p className="eyebrow">Results</p>
+            <h2>
+              {selectedOption === "All"
+                ? `All ${title} Games`
+                : `${selectedOption} Games`}
+            </h2>
+          </div>
+
+          <p>
+            Showing <strong>{games.length}</strong> results
+          </p>
+        </div>
+
+        <div className="game-grid">
+          {games.map((game) => (
+            <GameCard key={game.id} game={game} onClick={setSelectedGame} />
+          ))}
+        </div>
+      </section>
+    </section>
+  );
+}
+
+function GameCard({ game, onClick }) {
+  return (
+    <article className="game-card" onClick={() => onClick(game)}>
+      <div className="image-wrap">
+        <img src={game.image} alt={game.title} />
+      </div>
+
+      <div className="game-content">
+        <p className="tag">{game.genre}</p>
+        <h3>{game.title}</h3>
+
+        <div className="metadata">
+          <span>★ {game.rating || "N/A"}</span>
+          <span>{game.players}</span>
+          <span>{game.price}</span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function GameModal({ game, onClose }) {
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <section
+        className="modal"
+        aria-label={`${game.title} details`}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button className="close" onClick={onClose}>
+          ×
+        </button>
+
+        <p className="modal-heading">Game Preview</p>
+        <h2>{game.title}</h2>
+
+        <div className="modal-layout">
+          <img src={game.image} alt={game.title} />
+
+          <div className="modal-details">
+            <span>🎮 {game.genre}</span>
+            <span>⭐ {game.rating || "N/A"}</span>
+            <span>👥 {game.players}</span>
+            <span>💸 {game.price}</span>
+          </div>
+        </div>
+
+        <p className="modal-description">{game.description}</p>
+      </section>
+    </div>
   );
 }
 
