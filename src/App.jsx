@@ -9,8 +9,8 @@ function App() {
   const [selectedGame, setSelectedGame] = useState(null);
   const [activeTab, setActiveTab] = useState("home");
   const [selectedGenre, setSelectedGenre] = useState("All");
-  const [selectedPrice, setSelectedPrice] = useState("All");
-  const [selectedPlayers, setSelectedPlayers] = useState("All");
+  const [selectedPlatform, setSelectedPlatform] = useState("All");
+  const [selectedRelease, setSelectedRelease] = useState("All");
   const [selectedRating, setSelectedRating] = useState("All");
   const [visibleCount, setVisibleCount] = useState(12);
   const [logoClicked, setLogoClicked] = useState(false);
@@ -27,13 +27,22 @@ function App() {
         const cleanedGames = data.results.map((game, index) => {
           const rating = game.rating || 0;
 
-          let priceLabel = "Check Store";
-          if (index % 3 === 0) priceLabel = "Free";
-          if (index % 5 === 0) priceLabel = "Paid";
+        const platforms =
+          game.platforms?.map((item) => item.platform.name) || [];
 
-          let playerGroup = "Small Group";
-          if (index % 4 === 0) playerGroup = "Large Group";
-          if (index % 5 === 0) playerGroup = "Solo Friendly";
+        const releaseDate = game.released || "Unknown";
+        const releaseYear = game.released ? Number(game.released.slice(0, 4)) : null;
+
+        const releaseGroup =
+          !releaseYear
+            ? "Unknown"
+            : releaseYear >= 2020
+            ? "2020s"
+            : releaseYear >= 2010
+            ? "2010s"
+            : releaseYear >= 2000
+            ? "2000s"
+            : "Before 2000";
 
           return {
             id: game.id,
@@ -41,8 +50,11 @@ function App() {
             gameUrl: `https://rawg.io/games/${game.slug}`,
             title: game.name,
             genre: game.genres?.[0]?.name || "Multiplayer",
-            players: playerGroup,
-            price: priceLabel,
+            platforms,
+            primaryPlatform: platforms[0] || "Unknown",
+            releaseDate,
+            releaseYear,
+            releaseGroup,
             duration: "Varies",
             style:
               game.tags?.slice(0, 2).map((tag) => tag.name).join(", ") ||
@@ -78,14 +90,26 @@ function App() {
   const tabs = [
     { id: "home", label: "Home" },
     { id: "genre", label: "Genre" },
-    { id: "price", label: "Price" },
-    { id: "players", label: "Players" },
+    { id: "platform", label: "Platform" },
+    { id: "release", label: "Release Date" },
     { id: "ratings", label: "Ratings" }
   ];
 
   const genres = ["All", ...new Set(games.map((game) => game.genre))];
-  const priceOptions = ["All", "Free", "Paid", "Check Store"];
-  const playerOptions = ["All", "Solo Friendly", "Small Group", "Large Group"];
+  const allPlatforms = [
+    ...new Set(games.flatMap((game) => game.platforms))
+  ].filter(Boolean);
+
+  const platformOptions = ["All", ...allPlatforms.slice(0, 12)];
+
+  const releaseOptions = [
+    "All",
+    "2020s",
+    "2010s",
+    "2000s",
+    "Before 2000",
+    "Unknown"
+  ];
   const ratingOptions = ["All", "5-Star", "4-Star", "3-Star", "Under 3-Star"];
 
   const topRatedGames = useMemo(
@@ -106,15 +130,15 @@ function App() {
       ? games
       : games.filter((game) => game.genre === selectedGenre);
 
-  const priceGames =
-    selectedPrice === "All"
+  const platformGames =
+    selectedPlatform === "All"
       ? games
-      : games.filter((game) => game.price === selectedPrice);
+      : games.filter((game) => game.platforms.includes(selectedPlatform));
 
-  const playerGames =
-    selectedPlayers === "All"
+  const releaseGames =
+    selectedRelease === "All"
       ? games
-      : games.filter((game) => game.players === selectedPlayers);
+      : games.filter((game) => game.releaseGroup === selectedRelease);
 
   const ratingGames =
     selectedRating === "All"
@@ -208,28 +232,28 @@ function App() {
           />
         )}
 
-        {!isLoading && activeTab === "price" && (
+        {!isLoading && activeTab === "platform" && (
           <CategoryPage
             eyebrow="Explore By"
-            title="Price"
-            description="Sort games by whether they are free, paid, or listed through a store."
-            options={priceOptions}
-            selectedOption={selectedPrice}
-            setSelectedOption={setSelectedPrice}
-            games={priceGames}
+            title="Platform"
+            description="Browse multiplayer games by the platforms where they are available."
+            options={platformOptions}
+            selectedOption={selectedPlatform}
+            setSelectedOption={setSelectedPlatform}
+            games={platformGames}
             setSelectedGame={setSelectedGame}
           />
         )}
 
-        {!isLoading && activeTab === "players" && (
+        {!isLoading && activeTab === "release" && (
           <CategoryPage
             eyebrow="Explore By"
-            title="Players"
-            description="Find games for solo browsing, small friend groups, or larger parties."
-            options={playerOptions}
-            selectedOption={selectedPlayers}
-            setSelectedOption={setSelectedPlayers}
-            games={playerGames}
+            title="Release Date"
+            description="Explore multiplayer games by release era using RAWG release date data."
+            options={releaseOptions}
+            selectedOption={selectedRelease}
+            setSelectedOption={setSelectedRelease}
+            games={releaseGames}
             setSelectedGame={setSelectedGame}
           />
         )}
@@ -276,11 +300,11 @@ function App() {
             <button type="button" onClick={() => handleTabChange("genre")}>
               Genre
             </button>
-            <button type="button" onClick={() => handleTabChange("price")}>
-              Price
+            <button type="button" onClick={() => handleTabChange("platform")}>
+              Platform
             </button>
-            <button type="button" onClick={() => handleTabChange("players")}>
-              Players
+            <button type="button" onClick={() => handleTabChange("release")}>
+              Release Date
             </button>
             <button type="button" onClick={() => handleTabChange("ratings")}>
               Ratings
@@ -480,11 +504,11 @@ function GameCard({ game, onClick }) {
         <p className="tag">{game.genre}</p>
         <h3>{game.title}</h3>
 
-        <div className="metadata">
-          <span>★ {game.rating || "N/A"}</span>
-          <span>{game.players}</span>
-          <span>{game.price}</span>
-        </div>
+      <div className="metadata">
+        <span>★ {game.rating || "N/A"}</span>
+        <span>{game.primaryPlatform}</span>
+        <span>{game.releaseYear || "Unknown"}</span>
+      </div>
       </div>
     </article>
   );
@@ -511,8 +535,8 @@ function GameModal({ game, onClose }) {
           <div className="modal-details">
             <span>🎮 {game.genre}</span>
             <span>⭐ {game.rating || "N/A"}</span>
-            <span>👥 {game.players}</span>
-            <span>💸 {game.price}</span>
+            <span>🕹️ {game.primaryPlatform}</span>
+            <span>📅 {game.releaseDate}</span>
           </div>
         </div>
 
