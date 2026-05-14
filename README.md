@@ -6,7 +6,7 @@ The project was created as a final project for CSE 2004: Web Development and foc
 
 ## 🔴 Live Site
 
-[View the deployed site on GitHub Pages](https://washu-cse2004-sp2026-1.github.io/final-project-lilyrsun/)
+[View the deployed site on GitHub Pages](https://lilyrsun.github.io/game-with-friends/)
 
 ## ℹ️ Project Overview
 
