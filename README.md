@@ -8,7 +8,7 @@ The project was created as a final project for CSE 2004: Web Development and foc
 
 [View the deployed site on GitHub Pages](https://washu-cse2004-sp2026-1.github.io/final-project-lilyrsun/)
 
-## Project Overview
+## ℹ️ Project Overview
 
 Game With Friends is designed as a curated arcade-style archive for discovering multiplayer games. Instead of presenting games as a plain database, the site uses a visual browsing experience with a neon retro aesthetic, animated carousel, category-based tabs, modal previews, and interactive filters.
 
@@ -18,14 +18,14 @@ Users can explore games by:
 
 The homepage highlights popular and highly rated games, while the category pages allow users to narrow the game archive using real data from the RAWG API.
 
-## Design Direction
+## 🎨 Design Direction
 
 ### Original Figma Design
 https://www.figma.com/proto/YrTCKiG0cWzIaVjTuibHtV/Lily-Sun---Archive-Website?node-id=208-132&starting-point-node-id=208%3A132&t=eUgyxNoM9MsL5sZJ-1 
 
 The visual design is inspired by retro arcade interfaces, Pac-Man-style imagery, neon game rooms, and glitch typography. The goal was to create a game discovery page that feels more immersive and memorable than a standard API grid.
 
-## API Used
+## ✨ API Used
 
 This project uses the [RAWG Video Games Database API](https://rawg.io/apidocs).
 
@@ -35,11 +35,11 @@ The app requests multiplayer games using the RAWG games endpoint and pulls field
 
 The app then formats this data into a simplified structure for display across the homepage, category pages, cards, carousel, and modals.
 
-## Technologies Used
+## 🤖 Technologies Used
 
 - React, Vite, JavaScript, HTML, CSS, RAWG API
 
-## Features
+## 💡 Features
 
 - **RAWG API Integration**  
   Fetches multiplayer game data from the RAWG Video Games Database API.
