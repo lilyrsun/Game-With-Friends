@@ -25,6 +25,20 @@ https://www.figma.com/proto/YrTCKiG0cWzIaVjTuibHtV/Lily-Sun---Archive-Website?no
 
 The visual design is inspired by retro arcade interfaces, Pac-Man-style imagery, neon game rooms, and glitch typography. The goal was to create a game discovery page that feels more immersive and memorable than a standard API grid.
 
+## API Used
+
+This project uses the [RAWG Video Games Database API](https://rawg.io/apidocs).
+
+The app requests multiplayer games using the RAWG games endpoint and pulls fields such as:
+
+- Game title, Game ID and slug, Background image, Genres, Platforms, Release date, RAWG rating, RAWG popularity/activity count, Tags, RAWG game page URL
+
+The app then formats this data into a simplified structure for display across the homepage, category pages, cards, carousel, and modals.
+
+## Technologies Used
+
+- React, Vite, JavaScript, HTML, CSS, RAWG API
+
 ## Features
 
 - **RAWG API Integration**  
@@ -53,17 +67,3 @@ The visual design is inspired by retro arcade interfaces, Pac-Man-style imagery,
 
 - **Retro Arcade Visual Style**  
   Uses neon colors, glitch-inspired typography, hover states, pixel/arcade motifs, and a dark visual system.
-
-## API Used
-
-This project uses the [RAWG Video Games Database API](https://rawg.io/apidocs).
-
-The app requests multiplayer games using the RAWG games endpoint and pulls fields such as:
-
-- Game title, Game ID and slug, Background image, Genres, Platforms, Release date, RAWG rating, RAWG popularity/activity count, Tags, RAWG game page URL
-
-The app then formats this data into a simplified structure for display across the homepage, category pages, cards, carousel, and modals.
-
-## Technologies Used
-
-- React, Vite, JavaScript, HTML, CSS, RAWG API
