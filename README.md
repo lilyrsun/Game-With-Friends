@@ -18,6 +18,13 @@ Users can explore games by:
 
 The homepage highlights popular and highly rated games, while the category pages allow users to narrow the game archive using real data from the RAWG API.
 
+## Design Direction
+
+### Original Figma Design
+https://www.figma.com/proto/YrTCKiG0cWzIaVjTuibHtV/Lily-Sun---Archive-Website?node-id=208-132&starting-point-node-id=208%3A132&t=eUgyxNoM9MsL5sZJ-1 
+
+The visual design is inspired by retro arcade interfaces, Pac-Man-style imagery, neon game rooms, and glitch typography. The goal was to create a game discovery page that feels more immersive and memorable than a standard API grid.
+
 ## Features
 
 - **RAWG API Integration**  
@@ -75,10 +82,3 @@ Earlier versions of the project included placeholder values for price and player
 ## Technologies Used
 
 - React, Vite, JavaScript, HTML, CSS, RAWG API
-
-## Design Direction
-
-### Original Figma Design
-https://www.figma.com/proto/YrTCKiG0cWzIaVjTuibHtV/Lily-Sun---Archive-Website?node-id=208-132&starting-point-node-id=208%3A132&t=eUgyxNoM9MsL5sZJ-1 
-
-The visual design is inspired by retro arcade interfaces, Pac-Man-style imagery, neon game rooms, and glitch typography. The goal was to create a game discovery page that feels more immersive and memorable than a standard API grid.
