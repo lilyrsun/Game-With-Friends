@@ -1,8 +1,8 @@
-# Game With Friends
+# 🎮 Game With Friends
 
 **Game With Friends** is a retro-inspired multiplayer game discovery website built with React, JavaScript, HTML, and CSS. The site helps users explore games they can play with friends by browsing real video game data from the RAWG Video Games Database API.
 
-The project was created as a final project for Web Development and focuses on polished visual design, interactive browsing, external API integration, and responsive frontend implementation.
+The project was created as a final project for CSE 2004: Web Development and focuses on polished visual design, interactive browsing, external API integration, and responsive frontend implementation.
 
 ## Live Site
 
@@ -56,16 +56,7 @@ This project uses the [RAWG Video Games Database API](https://rawg.io/apidocs).
 
 The app requests multiplayer games using the RAWG games endpoint and pulls fields such as:
 
-- Game title
-- Game ID and slug
-- Background image
-- Genres
-- Platforms
-- Release date
-- RAWG rating
-- RAWG popularity/activity count
-- Tags
-- RAWG game page URL
+- Game title, Game ID and slug, Background image, Genres, Platforms, Release date, RAWG rating, RAWG popularity/activity count, Tags, RAWG game page URL
 
 The app then formats this data into a simplified structure for display across the homepage, category pages, cards, carousel, and modals.
 
@@ -86,14 +77,7 @@ Earlier versions of the project included placeholder values for price and player
 
 ## Technologies Used
 
-- React
-- Vite
-- JavaScript
-- HTML
-- CSS
-- RAWG API
-- GitHub Pages
-- Google Fonts
+- React, Vite, JavaScript, HTML, CSS, RAWG API
 
 ## Design Direction
 
@@ -101,13 +85,3 @@ Earlier versions of the project included placeholder values for price and player
 https://www.figma.com/proto/YrTCKiG0cWzIaVjTuibHtV/Lily-Sun---Archive-Website?node-id=208-132&starting-point-node-id=208%3A132&t=eUgyxNoM9MsL5sZJ-1 
 
 The visual design is inspired by retro arcade interfaces, Pac-Man-style imagery, neon game rooms, and glitch typography. The goal was to create a game discovery page that feels more immersive and memorable than a standard API grid.
-
-Key visual choices include:
-
-- Dark arcade-style background
-- Cyan, pink, yellow, and white neon accents
-- Rubik Glitch title typography
-- Bungee Inline headings and buttons
-- Strong card borders and hover effects
-- Modal-based game previews
-- Animated/scrollable carousel interaction
