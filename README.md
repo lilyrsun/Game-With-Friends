@@ -64,21 +64,6 @@ The app requests multiplayer games using the RAWG games endpoint and pulls field
 
 The app then formats this data into a simplified structure for display across the homepage, category pages, cards, carousel, and modals.
 
-## How the API Data Is Used
-
-The site fetches multiple pages of multiplayer game results from RAWG. After the data is returned, each game is cleaned into a simpler object containing only the fields needed by the frontend.
-
-The homepage sections are generated using this cleaned API data:
-
-- **Most Popular Games** are sorted using RAWG’s `added` field, which represents RAWG user activity.
-- **Top Rated Picks** are sorted using RAWG’s `rating` field.
-- **Genre filters** use all genres returned by RAWG for each game.
-- **Platform filters** use the platforms returned by RAWG.
-- **Release Date filters** group games by release era, such as 2020s, 2010s, 2000s, and Before 2000.
-- **Ratings filters** group games based on their RAWG rating.
-
-Earlier versions of the project included placeholder values for price and player count, but these were removed so that the final browsing categories are based on real RAWG data.
-
 ## Technologies Used
 
 - React, Vite, JavaScript, HTML, CSS, RAWG API
