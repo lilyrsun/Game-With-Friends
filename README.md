@@ -41,29 +41,20 @@ The app then formats this data into a simplified structure for display across th
 
 ## 💡 Features
 
-- **RAWG API Integration**  
-  Fetches multiplayer game data from the RAWG Video Games Database API.
+- **RAWG API Integration**: Fetches multiplayer game data from the RAWG Video Games Database API.
 
-- **Tabbed Navigation**  
-  Users can switch between Home, Genre, Platform, Release Date, and Ratings pages without leaving the single-page React app.
+- **Tabbed Navigation**: Users can switch between Home, Genre, Platform, Release Date, and Ratings pages without leaving the single-page React app.
 
-- **Most Popular Games Carousel**  
-  Displays popular games in a horizontally scrollable carousel that also auto-scrolls.
+- **Most Popular Games Carousel**: Displays popular games in a horizontally scrollable carousel that also auto-scrolls.
 
-- **Top Rated Picks**  
-  Highlights highly rated multiplayer games based on RAWG rating data.
+- **Top Rated Picks**: Highlights highly rated multiplayer games based on RAWG rating data.
 
-- **Explore All Section**  
-  Shows a grid of games with a “Show More” button to reveal additional results.
+- **Explore All Section**: Shows a grid of games with a “Show More” button to reveal additional results.
 
-- **Category Filters**  
-  Allows users to filter games by real RAWG metadata such as genre, platform, release era, and rating group.
+- **Category Filters**: Allows users to filter games by real RAWG metadata such as genre, platform, release era, and rating group.
 
-- **Game Detail Modal**  
-  Clicking a game opens a modal with more information, including genre, rating, platform, release date, and a link to the game’s RAWG page.
+- **Game Detail Modal**: Clicking a game opens a modal with more information, including genre, rating, platform, release date, and a link to the game’s RAWG page.
 
-- **Responsive Design**  
-  Layout adjusts for desktop, tablet, and mobile screens.
+- **Responsive Design**: Layout adjusts for desktop, tablet, and mobile screens.
 
-- **Retro Arcade Visual Style**  
-  Uses neon colors, glitch-inspired typography, hover states, pixel/arcade motifs, and a dark visual system.
+- **Retro Arcade Visual Style**: Uses neon colors, glitch-inspired typography, hover states, pixel/arcade motifs, and a dark visual system.
