@@ -4,7 +4,7 @@
 
 The project was created as a final project for CSE 2004: Web Development and focuses on polished visual design, interactive browsing, external API integration, and responsive frontend implementation.
 
-## Live Site
+## 🔴 Live Site
 
 [View the deployed site on GitHub Pages](https://washu-cse2004-sp2026-1.github.io/final-project-lilyrsun/)
 
@@ -14,10 +14,7 @@ Game With Friends is designed as a curated arcade-style archive for discovering 
 
 Users can explore games by:
 
-- Genre
-- Platform
-- Release date
-- Rating
+- Genre, Platform, Release date, Rating
 
 The homepage highlights popular and highly rated games, while the category pages allow users to narrow the game archive using real data from the RAWG API.
 
